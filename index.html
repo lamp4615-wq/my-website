@@ -49,8 +49,7 @@
 </div>
 
 <script>
-  // ⚠️ 請替換為您在 Apps Script 部署獲得的 Web App 網址
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/你的Web_App_ID/exec";
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwzdxVeywckJXecgWMr_p4iVrYHD0jaW4Ya7MPSsRUQI0EoPJ69fQvkD2QYG-zkh5FQNA/exec";
 
   function processUpload() {
     var className = document.getElementById('className').value;
@@ -81,7 +80,6 @@
         fileData: e.target.result
       };
 
-      // 改用 fetch 呼叫 GAS API
       fetch(GAS_WEB_APP_URL, {
         method: "POST",
         body: JSON.stringify(uploadData)
