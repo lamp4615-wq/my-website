@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>班級相片上傳</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; background-color: #f9f9f9; }
+    .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    select, input[type="file"], button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { background-color: #4CAF50; color: white; font-size: 16px; border: none; cursor: pointer; margin-top: 10px; }
+    button:disabled { background-color: #cccccc; }
+    #status { margin-top: 15px; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>班級相片上傳</h2>
+  
+  <div class="form-group">
+    <label for="className">請選擇班級：</label>
+    <select id="className">
+      <option value="">-- 請選擇班級 --</option>
+      <option value="一甲">一甲</option>
+      <option value="一乙">一乙</option>
+      <option value="二甲">二甲</option>
+      <option value="二乙">二乙</option>
+      <option value="三甲">三甲</option>
+      <option value="三乙">三乙</option>
+      <option value="四甲">四甲</option>
+      <option value="四乙">四乙</option>
+      <option value="五甲">五甲</option>
+      <option value="五乙">五乙</option>
+      <option value="六甲">六甲</option>
+      <option value="六乙">六乙</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="fileInput">拍照或選擇照片：</label>
+    <input type="file" id="fileInput" accept="image/*" capture="environment">
+  </div>
+
+  <button id="uploadBtn" onclick="processUpload()">開始上傳</button>
+
+  <div id="status"></div>
+</div>
+
+<script>
+  // ⚠️ 請替換為您在 Apps Script 部署獲得的 Web App 網址
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/你的Web_App_ID/exec";
+
+  function processUpload() {
+    var className = document.getElementById('className').value;
+    var fileInput = document.getElementById('fileInput');
+    var statusDiv = document.getElementById('status');
+    var uploadBtn = document.getElementById('uploadBtn');
+
+    if (!className) {
+      alert('請先選擇班級！');
+      return;
+    }
+    if (fileInput.files.length === 0) {
+      alert('請拍照或選擇照片！');
+      return;
+    }
+
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+
+    uploadBtn.disabled = true;
+    statusDiv.style.color = "blue";
+    statusDiv.innerText = "照片上傳中，請稍候...";
+
+    reader.onload = function(e) {
+      var uploadData = {
+        className: className,
+        fileName: file.name,
+        fileData: e.target.result
+      };
+
+      // 改用 fetch 呼叫 GAS API
+      fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify(uploadData)
+      })
+      .then(res => res.json())
+      .then(response => {
+        uploadBtn.disabled = false;
+        if (response && response.status === "success") {
+          statusDiv.style.color = "green";
+          statusDiv.innerText = response.message;
+          fileInput.value = ""; 
+        } else {
+          statusDiv.style.color = "red";
+          statusDiv.innerText = "上傳失敗：" + (response ? response.message : "未知錯誤");
+        }
+      })
+      .catch(err => {
+        uploadBtn.disabled = false;
+        statusDiv.style.color = "red";
+        statusDiv.innerText = "系統錯誤：" + err.message;
+      });
+    };
+
+    reader.readAsDataURL(file);
+  }
+</script>
+
+</body>
+</html>
