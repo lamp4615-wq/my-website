@@ -78,7 +78,7 @@
       margin-bottom: 20px;
     }
 
-    .upload-btn-group {
+    .upload-btn-wrapper {
       position: relative;
       overflow: hidden;
     }
@@ -107,7 +107,8 @@
       transform: translateY(-2px);
     }
 
-    .upload-btn input[type="file"] {
+    #cameraInput,
+    #galleryInput {
       display: none;
     }
 
@@ -309,17 +310,17 @@
   <div class="form-group">
     <label>📷 拍照或選擇照片：</label>
     <div class="upload-area">
-      <div class="upload-btn-group">
-        <button class="upload-btn">
+      <div class="upload-btn-wrapper">
+        <button class="upload-btn" id="cameraBtn">
           📸 拍照
-          <input type="file" id="cameraInput" accept="image/*" capture="environment">
         </button>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
       </div>
-      <div class="upload-btn-group">
-        <button class="upload-btn">
+      <div class="upload-btn-wrapper">
+        <button class="upload-btn" id="galleryBtn">
           🖼️ 從相片庫
-          <input type="file" id="galleryInput" accept="image/*" multiple>
         </button>
+        <input type="file" id="galleryInput" accept="image/*" multiple>
       </div>
     </div>
   </div>
@@ -352,14 +353,24 @@
 
   let selectedFiles = [];
 
-  // 設置拍照按鈕
+  // 拍照按鈕
+  document.getElementById('cameraBtn').addEventListener('click', function() {
+    document.getElementById('cameraInput').click();
+  });
+
+  // 相片庫按鈕
+  document.getElementById('galleryBtn').addEventListener('click', function() {
+    document.getElementById('galleryInput').click();
+  });
+
+  // 設置拍照輸入
   document.getElementById('cameraInput').addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
       addPhoto(e.target.files[0]);
     }
   });
 
-  // 設置相片庫按鈕
+  // 設置相片庫輸入
   document.getElementById('galleryInput').addEventListener('change', (e) => {
     for (let file of e.target.files) {
       if (selectedFiles.length < 2) {
