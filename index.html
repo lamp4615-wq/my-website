@@ -2,25 +2,293 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班級相片上傳</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; background-color: #f9f9f9; }
-    .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    select, input[type="file"], button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button { background-color: #4CAF50; color: white; font-size: 16px; border: none; cursor: pointer; margin-top: 10px; }
-    button:disabled { background-color: #cccccc; }
-    #status { margin-top: 15px; font-weight: bold; text-align: center; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .hint {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 12px 15px;
+      margin-bottom: 25px;
+      border-radius: 4px;
+      color: #856404;
+      font-size: 14px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .upload-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .upload-btn-group {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-btn {
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed #667eea;
+      background-color: #f0f4ff;
+      border-radius: 8px;
+      color: #667eea;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .upload-btn:hover {
+      background-color: #e8ecff;
+      border-color: #764ba2;
+      color: #764ba2;
+      transform: translateY(-2px);
+    }
+
+    .upload-btn input[type="file"] {
+      display: none;
+    }
+
+    .photo-preview-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .photo-preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background-color: #f5f5f5;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview.empty {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .photo-preview:hover .remove-btn {
+      opacity: 1;
+    }
+
+    .remove-btn:hover {
+      background-color: #ff5252;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #uploadBtn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #uploadBtn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    #uploadBtn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #clearBtn {
+      background-color: #e9ecef;
+      color: #333;
+    }
+
+    #clearBtn:hover {
+      background-color: #dee2e6;
+    }
+
+    #status {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+    }
+
+    #status.loading {
+      display: block;
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+    }
+
+    #status.success {
+      display: block;
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    #status.error {
+      display: block;
+      background-color: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #f5c6cb;
+    }
+
+    .celebration {
+      font-size: 40px;
+      text-align: center;
+      margin-top: 10px;
+      animation: bounce 0.6s ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .photo-count {
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .upload-area {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>班級相片上傳</h2>
+  <h2>📸 班級相片上傳</h2>
   
+  <div class="hint">
+    💡 貼心提醒：只需上傳 <strong>2 張</strong> 班級代表照片即可，讓我們一起留下美好回憶！
+  </div>
+
   <div class="form-group">
-    <label for="className">請選擇班級：</label>
+    <label for="className">👥 請選擇班級：</label>
     <select id="className">
       <option value="">-- 請選擇班級 --</option>
       <option value="一甲">一甲</option>
@@ -39,11 +307,42 @@
   </div>
 
   <div class="form-group">
-    <label for="fileInput">拍照或選擇照片：</label>
-    <input type="file" id="fileInput" accept="image/*" capture="environment">
+    <label>📷 拍照或選擇照片：</label>
+    <div class="upload-area">
+      <div class="upload-btn-group">
+        <button class="upload-btn">
+          📸 拍照
+          <input type="file" id="cameraInput" accept="image/*" capture="environment">
+        </button>
+      </div>
+      <div class="upload-btn-group">
+        <button class="upload-btn">
+          🖼️ 從相片庫
+          <input type="file" id="galleryInput" accept="image/*" multiple>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <button id="uploadBtn" onclick="processUpload()">開始上傳</button>
+  <div class="form-group">
+    <label>✅ 已選擇的照片：</label>
+    <div class="photo-preview-container">
+      <div class="photo-preview empty" data-index="0">
+        <span>照片 1</span>
+        <button class="remove-btn" style="display: none;">✕</button>
+      </div>
+      <div class="photo-preview empty" data-index="1">
+        <span>照片 2</span>
+        <button class="remove-btn" style="display: none;">✕</button>
+      </div>
+    </div>
+    <div class="photo-count">已選擇 <span id="photoCount">0</span> / 2 張照片</div>
+  </div>
+
+  <div class="button-group">
+    <button id="uploadBtn" disabled>🚀 開始上傳</button>
+    <button id="clearBtn">🔄 清空重選</button>
+  </div>
 
   <div id="status"></div>
 </div>
@@ -51,59 +350,165 @@
 <script>
   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwzdxVeywckJXecgWMr_p4iVrYHD0jaW4Ya7MPSsRUQI0EoPJ69fQvkD2QYG-zkh5FQNA/exec";
 
-  function processUpload() {
+  let selectedFiles = [];
+
+  // 設置拍照按鈕
+  document.getElementById('cameraInput').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      addPhoto(e.target.files[0]);
+    }
+  });
+
+  // 設置相片庫按鈕
+  document.getElementById('galleryInput').addEventListener('change', (e) => {
+    for (let file of e.target.files) {
+      if (selectedFiles.length < 2) {
+        addPhoto(file);
+      }
+    }
+  });
+
+  // 清空按鈕
+  document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+  // 上傳按鈕
+  document.getElementById('uploadBtn').addEventListener('click', processUpload);
+
+  function addPhoto(file) {
+    if (selectedFiles.length >= 2) {
+      alert('😊 已達到最多 2 張照片，無法再添加！');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      selectedFiles.push({
+        file: file,
+        data: e.target.result,
+        name: file.name
+      });
+      updatePhotoPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updatePhotoPreview() {
+    const previews = document.querySelectorAll('.photo-preview');
+    previews.forEach((preview, index) => {
+      preview.innerHTML = '';
+      if (index < selectedFiles.length) {
+        preview.classList.remove('empty');
+        const img = document.createElement('img');
+        img.src = selectedFiles[index].data;
+        preview.appendChild(img);
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '✕';
+        removeBtn.style.display = 'block';
+        removeBtn.onclick = (e) => {
+          e.preventDefault();
+          removePhoto(index);
+        };
+        preview.appendChild(removeBtn);
+      } else {
+        preview.classList.add('empty');
+        preview.innerHTML = `<span>照片 ${index + 1}</span>`;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '✕';
+        removeBtn.style.display = 'none';
+        preview.appendChild(removeBtn);
+      }
+    });
+
+    document.getElementById('photoCount').innerText = selectedFiles.length;
+    document.getElementById('uploadBtn').disabled = selectedFiles.length === 0 || !document.getElementById('className').value;
+  }
+
+  function removePhoto(index) {
+    selectedFiles.splice(index, 1);
+    updatePhotoPreview();
+  }
+
+  function clearAll() {
+    selectedFiles = [];
+    document.getElementById('cameraInput').value = '';
+    document.getElementById('galleryInput').value = '';
+    updatePhotoPreview();
+  }
+
+  document.getElementById('className').addEventListener('change', () => {
+    document.getElementById('uploadBtn').disabled = selectedFiles.length === 0 || !document.getElementById('className').value;
+  });
+
+  async function processUpload() {
     var className = document.getElementById('className').value;
-    var fileInput = document.getElementById('fileInput');
     var statusDiv = document.getElementById('status');
     var uploadBtn = document.getElementById('uploadBtn');
 
     if (!className) {
-      alert('請先選擇班級！');
-      return;
-    }
-    if (fileInput.files.length === 0) {
-      alert('請拍照或選擇照片！');
+      alert('🙏 請先選擇班級！');
       return;
     }
 
-    var file = fileInput.files[0];
-    var reader = new FileReader();
+    if (selectedFiles.length === 0) {
+      alert('📸 請先拍照或選擇照片！');
+      return;
+    }
 
     uploadBtn.disabled = true;
-    statusDiv.style.color = "blue";
-    statusDiv.innerText = "照片上傳中，請稍候...";
+    statusDiv.className = 'loading';
+    statusDiv.innerText = '⏳ 照片上傳中，請稍候...';
 
-    reader.onload = function(e) {
-      var uploadData = {
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const photoData = selectedFiles[i];
+      const uploadData = {
         className: className,
-        fileName: file.name,
-        fileData: e.target.result
+        fileName: `${Date.now()}_${i + 1}_${photoData.name}`,
+        fileData: photoData.data
       };
 
-      fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify(uploadData)
-      })
-      .then(res => res.json())
-      .then(response => {
-        uploadBtn.disabled = false;
-        if (response && response.status === "success") {
-          statusDiv.style.color = "green";
-          statusDiv.innerText = response.message;
-          fileInput.value = ""; 
-        } else {
-          statusDiv.style.color = "red";
-          statusDiv.innerText = "上傳失敗：" + (response ? response.message : "未知錯誤");
-        }
-      })
-      .catch(err => {
-        uploadBtn.disabled = false;
-        statusDiv.style.color = "red";
-        statusDiv.innerText = "系統錯誤：" + err.message;
-      });
-    };
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          body: JSON.stringify(uploadData)
+        });
 
-    reader.readAsDataURL(file);
+        const result = await response.json();
+        if (result && result.status === "success") {
+          successCount++;
+        } else {
+          failureCount++;
+        }
+      } catch (err) {
+        failureCount++;
+      }
+    }
+
+    uploadBtn.disabled = false;
+
+    if (failureCount === 0) {
+      statusDiv.className = 'success';
+      const celebrations = [
+        '🎉 太棒了！上傳成功！你是班級活動的紀錄小達人！',
+        '✨ 完美上傳！這些照片一定能留下美好回憶！',
+        '🌟 超讚！你的效率超高，班級照片搞定了！',
+        '🎊 棒極了！這樣用心記錄班級點滴，真的很用心呢！',
+        '👏 妙手生花！照片上傳得又快又順，按讚！'
+      ];
+      const randomMsg = celebrations[Math.floor(Math.random() * celebrations.length)];
+      statusDiv.innerHTML = randomMsg + '<div class="celebration">🎉🎊🌟</div>';
+      clearAll();
+    } else if (successCount > 0) {
+      statusDiv.className = 'error';
+      statusDiv.innerText = `⚠️ ${successCount} 張上傳成功，${failureCount} 張失敗，請檢查網路後重試！`;
+    } else {
+      statusDiv.className = 'error';
+      statusDiv.innerText = '❌ 上傳失敗，請檢查網路連線後重試！';
+    }
   }
 </script>
 
